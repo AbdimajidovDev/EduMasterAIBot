@@ -12,21 +12,38 @@ router = Router()
 
 
 @dp.message(Command('start'))
-async def start_answer(message: Message, state: FSMContext):
-    await message.answer(f"Assalomu alaykum {message.from_user.full_name} 👋\n Tizimga kirish (/login or /signup)")
+async def start_answer(message: Message):
+    await message.answer(f"Assalomu alaykum 👋 {message.from_user.full_name}\nTizimga kirish  /login or /signup")
 
 
 @dp.message(Command('help'))
 async def help_answer(message: Message):
     await message.answer("""<b>Bot buyruqlari</b>
+    /web - Web saytga o'tish
     /start - Botni ishga tushirish
     /help - Yordam olish
-    /signup - Signup
+    /signup - Ro'yxatdan o'tish
     /login - Tizimga kirish
     /courses - Mavjud kurslar ko'rish
 
-    📞 Call center: +998955710660
-    🧑🏻‍💼 Admin: @Abdimajidov_oo1""")
+    Call center: 📞 +998955710660
+    Admin: 🧑🏻‍💼 @Abdimajidov_oo1""", parse_mode='html')
+
+
+@dp.message(Command('stop'))
+async def stop_answer(message: Message, state: FSMContext):
+    this_state = await state.get_state()
+    if None == this_state:
+        await message.answer("Bekor qilish uchun jarayon mavjud emas!")
+    else:
+        await message.answer("""<b>Bot buyruqlari</b>
+    /web - Web saytga o'tish
+    /help - Yordam olish
+    /signup - Ro'yxatdan o'tish
+    /login - Tizimga kirish
+    /courses - Mavjud kurslar ko'rish""", parse_mode='html')
+        await state.clear()
+
 
 @router.message(F.text == '/login')
 async def login(message: Message, state: FSMContext):
@@ -51,20 +68,8 @@ async def get_password(message: Message, state: FSMContext):
 
     if 'access' in response:
         await save_token(message.from_user.id, response['access'])
-        await message.answer("✅ Tizimga muvofaqiyatli kirildi!")
+        await message.answer("✅ Tizimga muvofaqiyatli kirdingiz!")
         await state.clear()
     else:
         await message.answer(f"❌ Xatolik: {response}! Qayta urinib ko'ring.")
         # await state.clear()
-
-# @dp.message(Command('stop'))
-# async def stop_answer(message: Message, state: FSMContext):
-#     await message.answer('saloooom')
-#     print(state)
-#     if state:
-#         print(state)
-#         await state.clear()
-#     else:
-#         print(state.get_data())
-
-    # await message.answer()
